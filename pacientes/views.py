@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse,redirect
-from .models import Pacientes
+from .models import Pacientes, Tarefas, Consultas
 from django.contrib import messages
 from django.contrib.messages import constants
 
@@ -39,8 +39,37 @@ def pacientes(request):
 def pacientes_view(request,id):
     paciente = Pacientes.objects.get(id =id)
     if request.method == 'GET':
-        return render(request, 'paciente.html', {'paciente':paciente})
+        tarefas = Tarefas.objects.all()
+        return render(request, 'paciente.html', {'paciente':paciente, 'tarefas':tarefas})
+    elif request.method == 'POST':
+        humor = request.POST.get('humor')
+        registro_geral = request.POST.get('registro_geral')
+        video = request.FILES.get('video')
+        tarefas = request.POST.getlist('tarefas')
+        consultas = Consultas(
+            humor= int(humor),
+            registro_geral= registro_geral,
+            video=video,
+            paciente = paciente
+        )
+        consultas.save()
+        #primeiro salva a consulta pra depois adicionar consulta
+        
+        for i in tarefas:
+            tarefa = Tarefas.objects.get(id=i)
+            consultas.tarefas.add(tarefa)
+        consultas.save()
+        messages.add_message(request,constants.SUCCESS, 'Consulta Registrada com Sucesso!')
+    return redirect(f'/pacientes/{id}')
 
 
 def atualizar_paciente(request,id):
-    return HttpResponse(id)
+    pagamento = request.POST.get('pagamento')
+    paciente = Pacientes.objects.get(id=id)
+    
+    status = True if pagamento =='ativo' else False
+    paciente.pagamento = status
+    paciente.save()
+    
+    return redirect
+(f'/pacientes/{id}')
