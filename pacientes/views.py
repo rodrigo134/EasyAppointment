@@ -37,4 +37,10 @@ def pacientes(request):
 
 
 def pacientes_view(request,id):
+    paciente = Pacientes.objects.get(id =id)
+    if request.method == 'GET':
+        return render(request, 'paciente.html', {'paciente':paciente})
+
+
+def atualizar_paciente(request,id):
     return HttpResponse(id)
