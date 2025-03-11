@@ -9,7 +9,8 @@ from django.contrib.messages import constants
 
 def pacientes(request):
     if request.method == 'GET':
-        return render(request , 'pacientes.html',{'queixas': Pacientes.queixa_choices}) #inclusão de queixas que é uma tupla de tuplas do sintoma
+        pacientes = Pacientes.objects.all()
+        return render(request , 'pacientes.html',{'queixas': Pacientes.queixa_choices,'pacientes': pacientes}) #inclusão de queixas que é uma tupla de tuplas do sintoma
     elif request.method == 'POST':
         nome = request.POST.get('nome')
         email = request.POST.get('email')
@@ -35,3 +36,5 @@ def pacientes(request):
     return redirect('pacientes') #atributo name em url.py
 
 
+def pacientes_view(request,id):
+    return HttpResponse(id)
