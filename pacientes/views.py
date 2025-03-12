@@ -40,7 +40,8 @@ def pacientes_view(request,id):
     paciente = Pacientes.objects.get(id =id)
     if request.method == 'GET':
         tarefas = Tarefas.objects.all()
-        return render(request, 'paciente.html', {'paciente':paciente, 'tarefas':tarefas})
+        consultas = Consultas.objects.filter(paciente=paciente)
+        return render(request, 'paciente.html', {'paciente':paciente, 'tarefas':tarefas,'consultas': consultas})
     elif request.method == 'POST':
         humor = request.POST.get('humor')
         registro_geral = request.POST.get('registro_geral')
@@ -71,5 +72,9 @@ def atualizar_paciente(request,id):
     paciente.pagamento = status
     paciente.save()
     
-    return redirect
-(f'/pacientes/{id}')
+    return redirect(f'/pacientes/{id}')
+
+def excluir_consulta(request, id):
+    consulta = Consultas.objects.get(id=id)
+    consulta.delete()
+    return redirect(f'/pacientes/{consulta.paciente.id}')
